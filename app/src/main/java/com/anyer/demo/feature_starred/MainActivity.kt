@@ -3,40 +3,38 @@ package com.anyer.demo.feature_starred
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import com.anyer.demo.feature_starred.model.GitHubRepo
+import androidx.compose.runtime.collectAsState
 import com.anyer.demo.feature_starred.presentation.Screen
-import com.anyer.demo.feature_starred.presentation.ScreenState
+import com.anyer.demo.feature_starred.presentation.ScreenViewModel
 import com.anyer.demo.ui.theme.DemoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-private val testScreenState = ScreenState(
-    repos = listOf(
-        GitHubRepo(name = "brightwheel", "Jane Doe"),
-        GitHubRepo(name = "kotlin", "Jhon Doe"),
-        GitHubRepo(name = "bbt", "Sheldon Cooper"),
-    )
-)
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<ScreenViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            ScreenContent()
+            ScreenContent(viewModel)
         }
     }
 }
 
 @Composable
-private fun ScreenContent() {
+private fun ScreenContent(viewModel: ScreenViewModel) {
+    val screenState = viewModel.state.collectAsState()
+
     DemoTheme {
         // A surface container using the 'background' color from the theme
         Surface(color = MaterialTheme.colors.background) {
-            Screen(state = testScreenState)
+            Screen(state = screenState.value)
         }
     }
 }
